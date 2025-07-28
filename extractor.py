@@ -2,19 +2,16 @@ import fitz            # PyMuPDF
 import joblib
 import pandas as pd
 
-# Paths to your trained models
+# Paths to trained models
 HEADING_MODEL_PATH = "models/heading_classifier.pkl"
 LEVEL_MODEL_PATH   = "models/level_classifier.pkl"
 
-# Map the level‐classifier’s integer outputs to the heading labels
-# (we leave this here untouched, but won’t actually use it)
 CLASS_MAP_LEVEL = {
     1: "H1",
     2: "H2",
     3: "H3"
 }
 
-# These names must exactly match the columns expected by your ColumnTransformer
 FEATURE_NAMES = [
     "font_size",
     "x0",
@@ -105,17 +102,16 @@ def extract_outline(pdf_path):
     if not all_feats:
         return {"title": "", "outline": []}
 
-    # --- PART 2: Batch‐predict which are headings ---
+    # --- Batch‐predict which are headings ---
     X = pd.DataFrame(all_feats, columns=FEATURE_NAMES)
     is_heading_arr = heading_model.predict(X)
 
-    # Filter down to only those marked as headings
     headings = [
         meta for meta, is_h in zip(all_meta, is_heading_arr) 
                 if is_h
     ]
 
-    # --- PART 3: Merge split/overlapping heading fragments ---
+    # ---Merge split/overlapping heading fragments ---
     merged = []
     for h in headings:
         if (merged
@@ -124,14 +120,13 @@ def extract_outline(pdf_path):
             and abs(h["y0"] - merged[-1]["y0"]) < h["font_size"] * 1.5
         ):
             prev = merged[-1]
-            # only append if this fragment isn't already inside
             if h["text"] not in prev["text"]:
                 prev["text"] += " " + h["text"]
             prev["y0"] = h["y0"]
         else:
             merged.append(h)
 
-    # --- PART 4: Map font‐sizes → H1..H6 and de-dup final texts ---
+    # ---Map font‐sizes → H1..H6 and de-dup final texts ---
     unique_sizes = sorted({h["font_size"] for h in merged}, reverse=True)
     size_to_level = {
         size: f"H{idx+1}"
