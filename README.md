@@ -50,17 +50,23 @@ A lightweight PDF outline extractor that identifies document headings and genera
   - [scikit-learn](https://scikit-learn.org/) for loading and predicting with pre-trained models.
   - [joblib](https://joblib.readthedocs.io/) for efficient model serialization and loading.
 
-## Prerequisites
+## Installation
 
-- **Docker** installed (version 20+).
-- **Python** 3.8 or later (for local testing).
-- Python dependencies listed in `requirements.txt`:
-  ```
-  PyMuPDF
-  pandas
-  scikit-learn
-  joblib
-  ```
+1. **Clone the Repository**
+
+```bash
+git clone https://github.com/AdamyaSingh7/AdobeChallenge_1A.git
+cd AdobeChallenge_1a
+```
+
+2. **Set Up Prerequisites**
+
+- Ensure Docker is installed (version 20+ recommended).
+- (Optional) If running locally, use Python 3.8+ and install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Build & Run
 
@@ -77,6 +83,8 @@ docker build --platform linux/amd64 -t adobe1a-outline-extractor:latest .
 ```powershell
 docker build --platform linux/amd64 -t adobe1a-outline-extractor:latest .
 ```
+
+> ⚠️ **Note:** The build process takes approximately **1 to 1.5 minutes**, depending on your system.
 
 ### Run Container
 
@@ -106,4 +114,3 @@ The tool will process all PDFs in `/app/input` and write JSON outlines to `/app/
 >
 > - A **50-page** document to benchmark performance.
 > - A **German-language** PDF to validate multilingual support.
-
